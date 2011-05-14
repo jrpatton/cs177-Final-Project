@@ -1,0 +1,13 @@
+This tutorial demonstartes three functions in the audio package of ocatve: sound, soundsc, and clip. These functions demonstrate playback and basic editing features available in octave with this package.
+
+Before we can begin there is a small disclaimer. These functions were meant to work with a command line audio tool, namely sox. Sox is available on all platforms, but the sound functions aren't necessarily coded to support sox on all platforms. For this demo we will be using Ubuntu 10.10.
+
+First we need sox. To get this we type in sudo apt-get install sox. We'll also want to make sure we have the octave-audio package, so lets throw that line on there too. && sudo apt-get install octave-audio.
+
+Launch octave and we can begin. First load in a sound file. [x,fs]=auload("example.wav"); x represents the sound wave's amplitude, and fs is the frequency. To playback the audio simply type sound(x,fs). Lets interrupt this rick roll with ctrl+c. If we change the frequency, the playback will speed up and slow down.
+
+The next function scales the amplitude. y=soundsc(x,fs,.001); in this case by a factor of 1000. We can compare the amplitude of x and y and see this in numbers: x(1),y(1)
+
+Finally we have clip. This puts a ceiling or floor on the amplitude. y=clip(x, .000015); x(1),y(1)
+
+With these three functions we can alter the amplitude and frequency of the sound.

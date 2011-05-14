@@ -1,0 +1,83 @@
+﻿\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\title{Octave's External Audio Package \\ CS177a Final Project}
+\author{Jeremy Patton and Nadav Havivi}
+\date{\today}
+\begin{document}
+\maketitle 
+\section{Pre-requisite: SoX}
+The audio package is designed to use SoX. This is a powerful command-line tool for playing, recording, and editing audio.
+Windows and MAC: \url{http://sox.sourceforge.net/}
+Linux: Open up a terminal and type the following command:
+\begin{verbatim}
+Debian-based Linux:
+sudo apt-get install sox
+Fedora Core Linux:
+sudo yum install sox
+\end{verbatim}
+\section{Loading, Saving, and Analyzing}
+\subsection{\texttt{au.m}}
+The usage of this tool is \texttt{au(x, fs, lo [,hi])}, where \texttt{x} is the array of values for the sound,  \texttt{fs} is the frequency (or speed),  \texttt{lo} is the lower bound of the section of the array, and  \texttt{hi} the upper bound. If  \texttt{hi} is not given, then this function returns only the value at  \texttt{lo}, but if it is [] then the array is clipped to the end. Similarly, if  \texttt{lo} is [], the returned array will start at the beginning of x. This function takes x and returns the interval defined by  \texttt{[(lo*fs/1000)+1:(hi*fs/1000)+1]}.
+\subsection{\texttt{auload.m}}
+As can be surmised by its name, this function in its most basic use loads a sound file and returns an array corresponding to that file's data. A full use looks like this: \texttt{[data, rate, sampleformat] = auload(path)}, where \texttt{data} is the array of sound values, \texttt{rate} is the \texttt{fs} as described before, and \texttt{sampleformat} is how the saund data is aggregated and put together (something which we will not go into again in this paper). As of this version of the package, \texttt{auload.m} only accepts .wav, .au, and .aiff filetypes.
+\subsection{\texttt{ausave.m}}
+This function operates in the opposite direction as \texttt{auload.m}. Its use is in the form of \texttt{ausave('filename.ext', x [, fs, sampleformat])}. \texttt{filename.ext} is the name of the file to be saved, where \texttt{.ext} is the extension. This version of the package, again, only accepts .wav, .au, and .aiff filetypes. \texttt{x} is the sound data array to be saved, and optional arguments \texttt{fs} and \texttt{sampleformat} are the same as in previously discussed functions. 
+\subsection{\texttt{auplot.m}}
+Possibly the most interesting function in the package, \texttt{auplot.m} does exactly what is says: it plots an array of sound data. Its use is \texttt{[y, t, scale] = auplot(x [, fs [, offset [, plotstr]]])}, where \texttt{fs} is initialized to 8000 if not secified. \texttt{offset} is the offset from the beginning of the file to plot, and \texttt{plotstr} is the style of plotting to use, such as \texttt{"-g"} or \texttt{*b}. This function will plot each channel of a sound file on a separately, so that they can be read individually. See attached image ding.png for an example of this.
+\section{Playback, Clipping, and some Editing}
+\subsection{sound}
+\begin{verbatim}sound(x [, fs, bs])\end{verbatim}
+The sound function provides playback of an audio file. The argument 'x' represents the audio file {\it after} the file has been loaded with {\bf auload}.
+'fs' is the frequency, or speed, at which the audio plays. If this argument is not entered, the default value is 8000 hertz. Increasing this number will speed up the playback. Conversely, decreasing the number will slow the playback.
+Finally, 'bs' is the buffer size. Adjusting this will determine how much of the audio file is loaded into the buffer before playback begins. If this argument is not entered, the default value is equal to the frequency or 'fs'. Decreasing this number will result in a stuttered playback. Increasing this number will consume unnecessary memory. It is suggested you do not enter this argument.
+\begin{verbatim}
+Example
+octave:1>[x,fs]=auload("example.wav");
+octave:2>sound(x,fs)
+play WARN au: header size 24 is too small
+-: (au)
+Encoding: Signed PCM    
+Channels: 1 @ 16-bit   
+Samplerate: 22050Hz      
+Replaygain: off         
+Duration: unknown      
+In:0.00 00:00:02.97 [00:00:00.00] Out:65.5k [    -=|=-    ]        Clip:0
+\end{verbatim}
+\end{sound}
+\subsection{soundsc}
+\begin{verbatim}soundsc(x, fs, limit) or soundsc(x, fs, [lo, hi])\end{verbatim}
+This function allows for scaling of the amplitude of the audio. The results of this scaling can be saved as a vector.
+Using the first form of the function, limit will simply scale the amplitude by this factor. If, for example, the amplitude at a certain point is .5, scaling by .1 will have the following effect on the amplitude:
+\begin{equation}
+.5/.1=5
+\end{equation}
+Using the second form of the function will scale the bottom half of the wave by 'lo', and the top half of the wave by 'hi'. If 'lo' and 'hi' are the same values, then this function has the same effect as using the limit argument described above.
+\begin{verbatim}
+Example
+octave:1>x=auload("example.wav");
+octave:2>y=soundsc(x,fs,.1);
+octave:3>x(1),y(1)
+ans =  0.0013581
+ans =  0.013581
+\end{verbatim}
+\end{soundsc}
+\subsection{clip}
+\begin{verbatim}clip(x) or clip(x, hi) or clip(x,[lo,hi])\end{verbatim}
+Clip will put a ceiling and/or floor on the amplitude of the sound wave. If no values for either lo or hi are entered, 0 and 1 are assumed respectively. The output of this function may also be saved as a vector.
+\begin{verbatim}
+Example
+octave:1>x=auload("example.wav");
+octave:2>y=clip(x,.001);
+octave:3> x(1),y(1)
+ans =  0.0013581
+ans =  0.0010000
+\end{verbatim}
+\end{clip}
+
+\subsection{Exercises}
+1. Load a sound and make it high pitched, but not faster.
+2. Make the same sound faster, but try to keep the pitch the same.
+\end{Excercises}
+\end{document}
